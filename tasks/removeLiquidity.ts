@@ -1,0 +1,30 @@
+/* eslint-disable prettier/prettier */
+/* eslint-disable node/no-unpublished-import */
+import { task } from "hardhat/config";
+
+const contractAddress = "0xC7f25a596623bF5Bd972350c30865279B71d72D2";
+
+task("removeLiquidity", "Returns liquidity from the pool")
+  .addParam("tokenA", "Address of tokenA")
+  .addParam("tokenB", "Address of tokenB")
+  .addParam("liquidity", "The amount of liquidity")
+  .addParam("amountAMin", "Minimum tokenA amount")
+  .addParam("amountBMin", "Minimum tokenB amount")
+  .addParam("to", "Recipient of the liquidity tokens")
+  .addParam(
+    "deadline",
+    "Maximum transaction execution time threshold in seconds"
+  )
+  .setAction(async (taskArgs, hre) => {
+    const adapter = await hre.ethers.getContractAt("Adapter", contractAddress);
+
+    await adapter.removeLiquidity(
+      taskArgs.tokenA,
+      taskArgs.tokenB,
+      taskArgs.liquidity,
+      taskArgs.amountAMin,
+      taskArgs.amountBMin,
+      taskArgs.to,
+      taskArgs.deadline
+    );
+  });
