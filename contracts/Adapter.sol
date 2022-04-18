@@ -2,8 +2,8 @@
 pragma solidity ^0.8.13;
 
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
-import "./uniswapV2/IUniswapV2Factory.sol";
-import "./uniswapV2/IUniswapV2Router02.sol";
+import "./IUniswapV2Factory.sol";
+import "./IUniswapV2Router02.sol";
 
 contract Adapter {
     using SafeERC20 for IERC20;
@@ -12,7 +12,9 @@ contract Adapter {
         address indexed sender,
         address indexed to,
         address tokenA,
-        address tokenB
+        address tokenB,
+        uint256 tokenAAdded,
+        uint256 tokenBAdded
     );
 
     event LiquidityRemoved(
@@ -58,6 +60,9 @@ contract Adapter {
         address to,
         uint256 deadline
     ) external {
+        uint256 amountAOptimal; 
+        uint256 amountBOptimal;
+
         IERC20(tokenA).safeTransferFrom(
             msg.sender,
             address(this),
@@ -72,7 +77,7 @@ contract Adapter {
         IERC20(tokenA).safeApprove(address(router), amountADesired);
         IERC20(tokenB).safeApprove(address(router), amountBDesired);
 
-        router.addLiquidity(
+        (amountAOptimal, amountBOptimal,) = router.addLiquidity(
             tokenA,
             tokenB,
             amountADesired,
@@ -82,7 +87,14 @@ contract Adapter {
             to,
             deadline
         );
-        emit LiquidityAdded(msg.sender, to, tokenA, tokenB);
+        
+        if (amountADesired > amountAOptimal)
+            IERC20(tokenA).safeTransfer(msg.sender, amountADesired - amountAOptimal);
+
+        if (amountBDesired > amountBOptimal)
+            IERC20(tokenB).safeTransfer(msg.sender, amountBDesired - amountBOptimal);
+        
+        emit LiquidityAdded(msg.sender, to, tokenA, tokenB, amountAOptimal, amountBOptimal);
     }
 
     function removeLiquidity(
