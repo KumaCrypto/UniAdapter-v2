@@ -68,6 +68,7 @@ contract Adapter {
             address(this),
             amountADesired
         );
+        
         IERC20(tokenB).safeTransferFrom(
             msg.sender,
             address(this),
@@ -88,12 +89,17 @@ contract Adapter {
             deadline
         );
         
-        if (amountADesired > amountAOptimal)
-            IERC20(tokenA).safeTransfer(msg.sender, amountADesired - amountAOptimal);
+        if (amountADesired > amountAOptimal) {
+            unchecked {
+                IERC20(tokenA).safeTransfer(msg.sender, amountADesired - amountAOptimal);
+            }
+        } 
 
-        if (amountBDesired > amountBOptimal)
-            IERC20(tokenB).safeTransfer(msg.sender, amountBDesired - amountBOptimal);
-        
+        if (amountBDesired > amountBOptimal) {
+            unchecked {
+                IERC20(tokenB).safeTransfer(msg.sender, amountBDesired - amountBOptimal);
+            }
+        }
         emit LiquidityAdded(msg.sender, to, tokenA, tokenB, amountAOptimal, amountBOptimal);
     }
 
@@ -167,7 +173,12 @@ contract Adapter {
             to,
             deadline
         );
-        IERC20(path[0]).safeTransfer(msg.sender, amountInMax - amounts[0]);
+        
+        if (amountInMax != amounts[0]) {
+            unchecked {
+                IERC20(path[0]).safeTransfer(msg.sender, amountInMax - amounts[0]);
+            }
+        }
         emit SwappedTokensForExactTokens(msg.sender, to, path, amounts);
     }
 
