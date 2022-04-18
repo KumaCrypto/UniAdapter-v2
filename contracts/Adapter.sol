@@ -89,13 +89,13 @@ contract Adapter {
             deadline
         );
         
-        if (amountADesired > amountAOptimal) {
+        if (amountADesired != amountAOptimal) {
             unchecked {
                 IERC20(tokenA).safeTransfer(msg.sender, amountADesired - amountAOptimal);
             }
         } 
 
-        if (amountBDesired > amountBOptimal) {
+        if (amountBDesired != amountBOptimal) {
             unchecked {
                 IERC20(tokenB).safeTransfer(msg.sender, amountBDesired - amountBOptimal);
             }
