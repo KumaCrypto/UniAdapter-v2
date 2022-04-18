@@ -2,8 +2,8 @@
 pragma solidity ^0.8.13;
 
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
-import "./IUniswapV2Factory.sol";
-import "./IUniswapV2Router02.sol";
+import "./uniswapV2/IUniswapV2Factory.sol";
+import "./uniswapV2/IUniswapV2Router02.sol";
 
 contract Adapter {
     using SafeERC20 for IERC20;
